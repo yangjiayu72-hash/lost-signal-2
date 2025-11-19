@@ -1096,6 +1096,80 @@
             0%, 100% { opacity: 0; }
             50% { opacity: 1; }
         }
+
+        /* Screen malfunction effect */
+        .screen-glitch {
+            animation: screenGlitch 0.2s infinite;
+        }
+
+        @keyframes screenGlitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            20% { transform: translate(-5px, 5px); filter: hue-rotate(90deg); }
+            40% { transform: translate(5px, -5px); filter: hue-rotate(180deg); }
+            60% { transform: translate(-5px, -5px); filter: hue-rotate(270deg); }
+            80% { transform: translate(5px, 5px); filter: hue-rotate(360deg); }
+            100% { transform: translate(0); filter: hue-rotate(0deg); }
+        }
+
+        /* Black hole animation */
+        .black-hole {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #000 0%, #1a0033 50%, #ff1493 100%);
+            animation: blackHoleExpand 3s ease-out forwards;
+            box-shadow:
+                0 0 50px rgba(255, 20, 147, 0.8),
+                0 0 100px rgba(138, 43, 226, 0.6),
+                inset 0 0 50px rgba(0, 0, 0, 1);
+        }
+
+        @keyframes blackHoleExpand {
+            0% {
+                width: 50px;
+                height: 50px;
+                opacity: 0;
+            }
+            30% {
+                opacity: 1;
+            }
+            100% {
+                width: 2000px;
+                height: 2000px;
+                opacity: 1;
+            }
+        }
+
+        /* Dialogue text for ending sequence */
+        .ending-dialogue {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            color: #fff;
+            text-align: center;
+            opacity: 0;
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(255, 20, 147, 0.8);
+            width: 80%;
+            max-width: 700px;
+        }
+
+        .ending-dialogue.show {
+            animation: dialogueFade 2s forwards;
+        }
+
+        @keyframes dialogueFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
     </style>
 </head>
 <body>
@@ -1190,6 +1264,9 @@
 
     <div class="ending-screen" id="endingBranch">
         <h1 class="ending-title">Branching Timeline</h1>
+        <div class="ending-dialogue" id="dialogue1"></div>
+        <div class="ending-dialogue" id="dialogue2"></div>
+        <div class="ending-dialogue" id="dialogue3"></div>
         <div class="ending-visual">
             <div class="branch-animation">
                 <div class="branch-line left"></div>
@@ -1197,7 +1274,7 @@
                 <div class="branch-line right"></div>
             </div>
         </div>
-        <div class="ending-text">
+        <div class="ending-text" id="branchEndingText">
             Through persistent communication, you stabilized the signal.
             <br><br>
             A new timeline emerged from the noise.
@@ -1629,6 +1706,75 @@
             }
         }
 
+        // Dramatic sequence for branch ending
+        function showBranchEndingSequence() {
+            const endingScreen = document.getElementById('endingBranch');
+            const dialogue1 = document.getElementById('dialogue1');
+            const dialogue2 = document.getElementById('dialogue2');
+            const dialogue3 = document.getElementById('dialogue3');
+            const endingText = document.getElementById('branchEndingText');
+            const endingTitle = endingScreen.querySelector('.ending-title');
+            const endingVisual = endingScreen.querySelector('.ending-visual');
+
+            // Hide title and initial text
+            endingTitle.style.display = 'none';
+            endingText.style.opacity = '0';
+            endingVisual.style.opacity = '0';
+
+            // Dialogue sequence
+            dialogue1.textContent = "I can see it... the door! It's opening!";
+            setTimeout(() => dialogue1.classList.add('show'), 500);
+
+            setTimeout(() => {
+                dialogue1.classList.remove('show');
+                dialogue2.textContent = "Thank you... Thank you! I can go in!";
+                dialogue2.classList.add('show');
+            }, 3000);
+
+            setTimeout(() => {
+                dialogue2.classList.remove('show');
+                dialogue3.textContent = "I'm... I'm entering now...";
+                dialogue3.classList.add('show');
+            }, 5500);
+
+            // Black hole appears
+            setTimeout(() => {
+                dialogue3.classList.remove('show');
+                const blackHole = document.createElement('div');
+                blackHole.className = 'black-hole';
+                endingScreen.appendChild(blackHole);
+
+                // Play ominous sound
+                playTone(100, 1.5, 'sine', 0.3);
+                setTimeout(() => playTone(80, 1.5, 'sine', 0.25), 500);
+                setTimeout(() => playTone(60, 2, 'sine', 0.2), 1000);
+            }, 8000);
+
+            // Screen glitch starts
+            setTimeout(() => {
+                endingScreen.classList.add('screen-glitch');
+                // Rapid glitch sounds
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        playTone(Math.random() * 500 + 200, 0.05, 'square', 0.15);
+                    }, i * 100);
+                }
+            }, 10000);
+
+            // Screen goes black
+            setTimeout(() => {
+                endingScreen.classList.remove('screen-glitch');
+                endingScreen.style.background = '#000';
+                endingScreen.innerHTML = '';
+            }, 12000);
+
+            // Return to beginning
+            setTimeout(() => {
+                playInitialSound();
+                resetExperience();
+            }, 14000);
+        }
+
         // Determine and show ending
         function showEnding() {
             let endingType;
@@ -1649,16 +1795,21 @@
             // Show appropriate ending
             if (endingType === 'timeloop') {
                 document.getElementById('endingTimeLoop').classList.add('active');
+                // Show summary after ending
+                setTimeout(() => {
+                    showSummary(endingType);
+                }, 8000);
             } else if (endingType === 'branch') {
                 document.getElementById('endingBranch').classList.add('active');
+                // Trigger dramatic sequence instead of summary
+                showBranchEndingSequence();
             } else {
                 document.getElementById('endingDissolution').classList.add('active');
+                // Show summary after ending
+                setTimeout(() => {
+                    showSummary(endingType);
+                }, 8000);
             }
-
-            // Show summary after ending
-            setTimeout(() => {
-                showSummary(endingType);
-            }, 8000);
         }
 
         // Show summary screen
@@ -2271,8 +2422,35 @@
             state.choiceHistory = [];
 
             // Hide all ending and summary screens
-            document.querySelectorAll('.ending-screen').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.ending-screen').forEach(el => {
+                el.classList.remove('active');
+                el.classList.remove('screen-glitch');
+            });
             document.getElementById('summaryScreen').classList.remove('active');
+
+            // Reset branch ending screen HTML structure
+            const endingBranch = document.getElementById('endingBranch');
+            endingBranch.style.background = '';
+            endingBranch.innerHTML = `
+                <h1 class="ending-title">Branching Timeline</h1>
+                <div class="ending-dialogue" id="dialogue1"></div>
+                <div class="ending-dialogue" id="dialogue2"></div>
+                <div class="ending-dialogue" id="dialogue3"></div>
+                <div class="ending-visual">
+                    <div class="branch-animation">
+                        <div class="branch-line left"></div>
+                        <div class="branch-line center"></div>
+                        <div class="branch-line right"></div>
+                    </div>
+                </div>
+                <div class="ending-text" id="branchEndingText">
+                    Through persistent communication, you stabilized the signal.
+                    <br><br>
+                    A new timeline emerged from the noise.
+                    <br>
+                    The sender found their way to the exit, guided by your words.
+                </div>
+            `;
 
             // Show main container
             document.querySelector('.container').style.display = 'block';
