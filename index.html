@@ -1622,6 +1622,22 @@
             }, 1000);
         }
 
+        // Start black hole random check
+        function startBlackHoleCheck() {
+            // Clear any existing interval
+            if (blackHoleCheckInterval) {
+                clearInterval(blackHoleCheckInterval);
+            }
+
+            // Check every 15 seconds for random black hole event
+            blackHoleCheckInterval = setInterval(() => {
+                // 30% chance to trigger black hole
+                if (Math.random() < 0.3) {
+                    triggerBlackHoleEvent();
+                }
+            }, 15000);
+        }
+
         // Start the experience
         function startExperience() {
             // Play initial signal detection sound
@@ -1634,6 +1650,9 @@
                 displayMessage(messages.round1.base);
                 showVisualHint(messages.round1.hint);
                 showFlash(0);
+
+                // Start black hole random checks
+                startBlackHoleCheck();
             }, 2000);
         }
 
@@ -1704,6 +1723,90 @@
                     showEnding();
                 }, 3000);
             }
+        }
+
+        // Trigger random black hole event
+        function triggerBlackHoleEvent() {
+            // Stop all timers and intervals
+            if (blackHoleCheckInterval) {
+                clearInterval(blackHoleCheckInterval);
+                blackHoleCheckInterval = null;
+            }
+            if (challengeTimerInterval) {
+                clearInterval(challengeTimerInterval);
+                challengeTimerInterval = null;
+            }
+
+            // Hide main interface
+            document.querySelector('.container').style.display = 'none';
+
+            // Close any open modals
+            challengeModal.classList.remove('active');
+            forwardMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+
+            // Show ending screen for black hole effect
+            const endingScreen = document.getElementById('endingBranch');
+            endingScreen.classList.add('active');
+
+            const dialogue1 = document.getElementById('dialogue1');
+            const dialogue2 = document.getElementById('dialogue2');
+            const dialogue3 = document.getElementById('dialogue3');
+            const endingText = document.getElementById('branchEndingText');
+            const endingTitle = endingScreen.querySelector('.ending-title');
+            const endingVisual = endingScreen.querySelector('.ending-visual');
+
+            // Hide title and initial text
+            endingTitle.style.display = 'none';
+            endingText.style.opacity = '0';
+            endingVisual.style.opacity = '0';
+
+            // Show warning dialogue
+            dialogue1.textContent = "Wait... something's wrong...";
+            setTimeout(() => dialogue1.classList.add('show'), 200);
+
+            setTimeout(() => {
+                dialogue1.classList.remove('show');
+                dialogue2.textContent = "The signal... it's collapsing!";
+                dialogue2.classList.add('show');
+            }, 2000);
+
+            // Black hole appears quickly
+            setTimeout(() => {
+                dialogue2.classList.remove('show');
+                const blackHole = document.createElement('div');
+                blackHole.className = 'black-hole';
+                endingScreen.appendChild(blackHole);
+
+                // Play ominous sound
+                playTone(100, 1.5, 'sine', 0.3);
+                setTimeout(() => playTone(80, 1.5, 'sine', 0.25), 500);
+                setTimeout(() => playTone(60, 2, 'sine', 0.2), 1000);
+            }, 4000);
+
+            // Screen glitch starts
+            setTimeout(() => {
+                endingScreen.classList.add('screen-glitch');
+                // Rapid glitch sounds
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        playTone(Math.random() * 500 + 200, 0.05, 'square', 0.15);
+                    }, i * 100);
+                }
+            }, 6000);
+
+            // Screen goes black
+            setTimeout(() => {
+                endingScreen.classList.remove('screen-glitch');
+                endingScreen.style.background = '#000';
+                endingScreen.innerHTML = '';
+            }, 8000);
+
+            // Return to beginning
+            setTimeout(() => {
+                playInitialSound();
+                resetExperience();
+            }, 10000);
         }
 
         // Dramatic sequence for branch ending
@@ -1846,6 +1949,7 @@
         let currentChallenge = null;
         let challengeTimerInterval = null;
         let challengeTimeRemaining = 30;
+        let blackHoleCheckInterval = null;
 
         const challengeTypes = [
             {
@@ -2416,6 +2520,16 @@
 
         // Reset and restart the experience
         function resetExperience() {
+            // Clear all timers and intervals
+            if (blackHoleCheckInterval) {
+                clearInterval(blackHoleCheckInterval);
+                blackHoleCheckInterval = null;
+            }
+            if (challengeTimerInterval) {
+                clearInterval(challengeTimerInterval);
+                challengeTimerInterval = null;
+            }
+
             // Reset all state
             state.replyCount = 0;
             state.ignoreCount = 0;
