@@ -72,36 +72,44 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 150vmax;
-            height: 150vmax;
+            width: 120vmax;
+            height: 120vmax;
             transform: translate(-50%, -50%);
             background:
                 radial-gradient(ellipse at 50% 50%,
-                    rgba(138, 43, 226, 0.3) 0%,
-                    rgba(72, 61, 139, 0.2) 15%,
-                    rgba(255, 20, 147, 0.15) 25%,
-                    transparent 50%
+                    rgba(200, 150, 255, 0.7) 0%,
+                    rgba(138, 43, 226, 0.6) 5%,
+                    rgba(72, 61, 139, 0.5) 15%,
+                    rgba(255, 20, 147, 0.4) 25%,
+                    rgba(100, 50, 180, 0.2) 35%,
+                    transparent 60%
                 ),
                 conic-gradient(from 0deg at 50% 50%,
                     transparent 0deg,
-                    rgba(138, 43, 226, 0.4) 30deg,
-                    transparent 60deg,
-                    rgba(255, 20, 147, 0.3) 90deg,
+                    rgba(200, 150, 255, 0.9) 10deg,
+                    rgba(138, 43, 226, 0.8) 30deg,
+                    transparent 50deg,
+                    rgba(255, 20, 147, 0.7) 80deg,
+                    rgba(200, 100, 200, 0.6) 100deg,
                     transparent 120deg,
-                    rgba(72, 61, 139, 0.4) 150deg,
+                    rgba(138, 43, 226, 0.8) 140deg,
+                    rgba(72, 61, 139, 0.7) 160deg,
                     transparent 180deg,
-                    rgba(138, 43, 226, 0.4) 210deg,
-                    transparent 240deg,
-                    rgba(255, 20, 147, 0.3) 270deg,
+                    rgba(200, 150, 255, 0.9) 190deg,
+                    rgba(138, 43, 226, 0.8) 210deg,
+                    transparent 230deg,
+                    rgba(255, 20, 147, 0.7) 260deg,
+                    rgba(200, 100, 200, 0.6) 280deg,
                     transparent 300deg,
-                    rgba(72, 61, 139, 0.4) 330deg,
+                    rgba(138, 43, 226, 0.8) 320deg,
+                    rgba(72, 61, 139, 0.7) 340deg,
                     transparent 360deg
                 );
-            opacity: 0.5;
+            opacity: 0.9;
             animation: galaxyRotate 120s linear infinite;
             z-index: 0;
             pointer-events: none;
-            filter: blur(3px);
+            filter: blur(1.5px);
         }
 
         @keyframes galaxyRotate {
@@ -185,7 +193,7 @@
                     rgba(138, 43, 226, 0.1) 50%,
                     rgba(72, 61, 139, 0.15) 100%
                 ),
-                rgba(0, 0, 0, 0.7);
+                rgba(0, 0, 0, 0.4);
             border: 2px solid transparent;
             border-image: linear-gradient(135deg, #ff1493, #8a2be2, #00ffff, #ff1493) 1;
             clip-path: polygon(
@@ -207,7 +215,7 @@
                 0 0 100px rgba(138, 43, 226, 0.3),
                 inset 0 0 80px rgba(0, 0, 0, 0.5);
             transition: all 0.4s ease;
-            backdrop-filter: blur(15px) saturate(180%);
+            backdrop-filter: blur(8px) saturate(180%);
         }
 
         /* Holographic border effect */
