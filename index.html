@@ -2058,9 +2058,6 @@
                 text: choice.text
             });
 
-            // Play sound
-            playReplySound();
-
             // Apply static change
             state.staticLevel = Math.max(state.staticLevel + choice.staticChange, 0.1);
             updateStatic();
