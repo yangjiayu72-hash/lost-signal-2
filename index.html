@@ -19,6 +19,52 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+
+        /* Universe background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(72, 61, 139, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 20, 147, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 40% 60%, rgba(75, 0, 130, 0.1) 0%, transparent 55%),
+                #000;
+            z-index: 0;
+        }
+
+        /* Stars layer 1 - small stars */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent),
+                radial-gradient(1px 1px at 15% 95%, white, transparent);
+            background-size: 200% 200%;
+            background-position: 0% 0%;
+            opacity: 0.4;
+            animation: twinkle 8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
         }
 
         /* Animated noise background */
@@ -31,15 +77,15 @@
             background:
                 repeating-linear-gradient(
                     0deg,
-                    rgba(255, 255, 255, 0.03) 0px,
+                    rgba(255, 255, 255, 0.02) 0px,
                     transparent 1px,
                     transparent 2px,
-                    rgba(255, 255, 255, 0.03) 3px
+                    rgba(255, 255, 255, 0.02) 3px
                 );
-            opacity: 0.3;
+            opacity: 0.2;
             animation: noise 0.2s infinite;
             pointer-events: none;
-            z-index: 1;
+            z-index: 2;
         }
 
         @keyframes noise {
@@ -55,6 +101,32 @@
             90% { transform: translate(-2%, -2%); }
         }
 
+        /* Stars layer 2 - larger stars */
+        .stars-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(3px 3px at 10% 20%, rgba(255, 255, 255, 0.8), transparent),
+                radial-gradient(2px 2px at 70% 80%, rgba(255, 255, 255, 0.6), transparent),
+                radial-gradient(3px 3px at 40% 40%, rgba(255, 255, 255, 0.7), transparent),
+                radial-gradient(2px 2px at 85% 15%, rgba(255, 255, 255, 0.5), transparent),
+                radial-gradient(3px 3px at 25% 75%, rgba(255, 255, 255, 0.8), transparent),
+                radial-gradient(2px 2px at 95% 50%, rgba(255, 255, 255, 0.6), transparent);
+            background-size: 300% 300%;
+            animation: starMove 20s linear infinite;
+            opacity: 0.6;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes starMove {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
         /* Main container */
         .container {
             position: relative;
@@ -63,44 +135,125 @@
             max-width: 800px;
         }
 
-        /* Communication window */
+        /* Communication window - Futuristic design */
         .comm-window {
-            background: linear-gradient(135deg, #ff1493 0%, #c71585 100%);
-            border: 3px solid #ff69b4;
-            border-radius: 12px;
-            padding: 35px;
+            background:
+                linear-gradient(135deg,
+                    rgba(255, 20, 147, 0.15) 0%,
+                    rgba(138, 43, 226, 0.1) 50%,
+                    rgba(72, 61, 139, 0.15) 100%
+                ),
+                rgba(0, 0, 0, 0.7);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #ff1493, #8a2be2, #00ffff, #ff1493) 1;
+            clip-path: polygon(
+                0 10px,
+                10px 0,
+                calc(100% - 10px) 0,
+                100% 10px,
+                100% calc(100% - 10px),
+                calc(100% - 10px) 100%,
+                10px 100%,
+                0 calc(100% - 10px)
+            );
+            padding: 40px;
             min-height: 450px;
             position: relative;
             overflow: hidden;
             box-shadow:
-                0 0 40px rgba(255, 20, 147, 0.6),
-                inset 0 0 60px rgba(0, 0, 0, 0.3);
+                0 0 60px rgba(255, 20, 147, 0.5),
+                0 0 100px rgba(138, 43, 226, 0.3),
+                inset 0 0 80px rgba(0, 0, 0, 0.5);
             transition: all 0.4s ease;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px) saturate(180%);
         }
 
+        /* Holographic border effect */
+        .comm-window::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            clip-path: polygon(
+                0 10px,
+                10px 0,
+                calc(100% - 10px) 0,
+                100% 10px,
+                100% calc(100% - 10px),
+                calc(100% - 10px) 100%,
+                10px 100%,
+                0 calc(100% - 10px)
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Animated scanline with holographic effect */
         .comm-window::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(255, 255, 255, 0.03) 10px,
-                rgba(255, 255, 255, 0.03) 20px
-            );
-            animation: scanline 10s linear infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    rgba(255, 20, 147, 0.1) 50%,
+                    transparent 100%
+                );
+            animation: holographicScan 3s linear infinite;
             pointer-events: none;
             z-index: 3;
         }
 
-        @keyframes scanline {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(50px); }
+        @keyframes holographicScan {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { transform: translateY(200%); opacity: 0; }
+        }
+
+        /* Corner accents */
+        .comm-window .corner-accent {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ff1493;
+            z-index: 4;
+            pointer-events: none;
+            box-shadow: 0 0 10px rgba(255, 20, 147, 0.8);
+        }
+
+        .comm-window .corner-accent.top-left {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .comm-window .corner-accent.top-right {
+            top: 0;
+            right: 0;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .comm-window .corner-accent.bottom-left {
+            bottom: 0;
+            left: 0;
+            border-right: none;
+            border-top: none;
+        }
+
+        .comm-window .corner-accent.bottom-right {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
         }
 
         .comm-window.glitch {
@@ -149,8 +302,11 @@
             line-height: 1.8;
             min-height: 300px;
             position: relative;
-            z-index: 2;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            z-index: 4;
+            text-shadow:
+                0 0 10px rgba(255, 20, 147, 0.8),
+                0 0 20px rgba(138, 43, 226, 0.5),
+                0 0 30px rgba(0, 255, 255, 0.3);
         }
 
         .glitch-text {
@@ -925,10 +1081,17 @@
     <!-- Noise background -->
     <div class="noise-bg"></div>
 
+    <!-- Stars layer -->
+    <div class="stars-layer"></div>
+
     <!-- Main container -->
     <div class="container">
         <!-- Communication window -->
         <div class="comm-window" id="commWindow">
+            <div class="corner-accent top-left"></div>
+            <div class="corner-accent top-right"></div>
+            <div class="corner-accent bottom-left"></div>
+            <div class="corner-accent bottom-right"></div>
             <div class="static-overlay" id="staticOverlay"></div>
             <div class="visual-hint" id="visualHint"></div>
             <div class="hidden-message" id="hiddenMessage"></div>
