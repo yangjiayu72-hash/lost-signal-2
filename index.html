@@ -1325,6 +1325,49 @@
             80% { opacity: 1; transform: translateX(-50%) translateY(0); }
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
         }
+
+        /* Distress signal flood overlay */
+        .distress-flood {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .distress-flood.active {
+            opacity: 1;
+        }
+
+        .distress-message {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            color: #ff1493;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.8);
+            white-space: nowrap;
+            animation: distressScroll 2s linear forwards;
+        }
+
+        @keyframes distressScroll {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -1371,6 +1414,9 @@
 
     <!-- Menu overlay -->
     <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Distress signal flood overlay -->
+    <div class="distress-flood" id="distressFlood"></div>
 
     <!-- Challenge modal -->
     <div class="challenge-modal" id="challengeModal">
@@ -1791,6 +1837,69 @@
             blackHoleCheckInterval = setInterval(() => {
                 triggerBlackHoleEvent();
             }, 12000);
+        }
+
+        // Show distress signal flood
+        function showDistressFlood() {
+            const floodContainer = document.getElementById('distressFlood');
+            const distressMessages = [
+                'HELP... ANYONE...',
+                'PLEASE RESPOND',
+                'I\'M TRAPPED',
+                'CAN YOU HEAR ME?',
+                'SIGNAL FADING',
+                'DON\'T LEAVE ME',
+                'WHERE ARE YOU?',
+                'I CAN\'T GET OUT',
+                'HELP ME',
+                'PLEASE... HELP...',
+                'IS ANYONE THERE?',
+                'I\'M SCARED',
+                'DON\'T IGNORE THIS',
+                'RESPOND PLEASE',
+                'I NEED HELP',
+                'SAVE ME',
+                'ANYONE... PLEASE',
+                'GETTING DARKER',
+                'CAN\'T BREATHE',
+                'HELP... HELP...'
+            ];
+
+            floodContainer.classList.add('active');
+            floodContainer.innerHTML = '';
+
+            // Create multiple distress messages
+            let messageCount = 0;
+            const messageInterval = setInterval(() => {
+                if (messageCount >= 40) {
+                    clearInterval(messageInterval);
+                    return;
+                }
+
+                const message = document.createElement('div');
+                message.className = 'distress-message';
+                message.textContent = distressMessages[Math.floor(Math.random() * distressMessages.length)];
+
+                // Random position
+                message.style.left = Math.random() * 80 + 10 + '%';
+                message.style.top = Math.random() * 80 + 10 + '%';
+
+                floodContainer.appendChild(message);
+                messageCount++;
+
+                // Remove message after animation
+                setTimeout(() => {
+                    message.remove();
+                }, 2000);
+            }, 100);
+
+            // Hide flood overlay after 4 seconds
+            setTimeout(() => {
+                floodContainer.classList.remove('active');
+                setTimeout(() => {
+                    floodContainer.innerHTML = '';
+                }, 500);
+            }, 4000);
         }
 
         // Start the experience
@@ -2472,6 +2581,9 @@
 
             // Play sound
             playIgnoreSound();
+
+            // Show distress signal flood
+            showDistressFlood();
 
             // Increase static
             state.staticLevel = Math.min(state.staticLevel + 0.25, 1);
