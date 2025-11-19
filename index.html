@@ -1979,21 +1979,6 @@
                 }
             },
             {
-                type: 'pattern',
-                generate: () => {
-                    const start = Math.floor(Math.random() * 10) + 1;
-                    const step = Math.floor(Math.random() * 5) + 2;
-                    const sequence = [start, start + step, start + step * 2, start + step * 3];
-                    const answer = start + step * 4;
-
-                    return {
-                        question: `Complete the sequence:<br>${sequence.join(', ')}, ?`,
-                        answer: answer.toString(),
-                        inputType: 'text'
-                    };
-                }
-            },
-            {
                 type: 'reaction',
                 generate: () => {
                     const colors = ['🔴', '🟢', '🔵', '🟡', '🟣'];
