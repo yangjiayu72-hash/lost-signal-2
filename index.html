@@ -1300,16 +1300,15 @@
 
         // Play initial signal detection sound
         function playInitialSound() {
-            // Rising frequency sequence to simulate signal detection
-            playTone(300, 0.2, 'sine', 0.15);
-            setTimeout(() => playTone(400, 0.2, 'sine', 0.15), 200);
-            setTimeout(() => playTone(600, 0.3, 'sine', 0.2), 400);
-            setTimeout(() => playTone(800, 0.4, 'sine', 0.2), 700);
+            // Deep resonant tone that fades in - mysterious signal from the void
+            playTone(150, 0.8, 'sine', 0.12);
+            setTimeout(() => playTone(200, 0.6, 'sine', 0.15), 400);
+            setTimeout(() => playTone(180, 0.5, 'triangle', 0.1), 800);
             setTimeout(() => {
-                // Add a quick beep pattern
-                playTone(1000, 0.1, 'square', 0.15);
-                setTimeout(() => playTone(1000, 0.1, 'square', 0.15), 150);
-            }, 1100);
+                // Subtle high-frequency whisper
+                playTone(2000, 0.15, 'sine', 0.05);
+                setTimeout(() => playTone(1800, 0.15, 'sine', 0.04), 150);
+            }, 1200);
         }
 
         // Play background static (continuous)
