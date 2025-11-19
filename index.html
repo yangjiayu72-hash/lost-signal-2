@@ -67,6 +67,48 @@
             50% { opacity: 0.7; }
         }
 
+        /* Rotating Galaxy */
+        .galaxy-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 150vmax;
+            height: 150vmax;
+            transform: translate(-50%, -50%);
+            background:
+                radial-gradient(ellipse at 50% 50%,
+                    rgba(138, 43, 226, 0.3) 0%,
+                    rgba(72, 61, 139, 0.2) 15%,
+                    rgba(255, 20, 147, 0.15) 25%,
+                    transparent 50%
+                ),
+                conic-gradient(from 0deg at 50% 50%,
+                    transparent 0deg,
+                    rgba(138, 43, 226, 0.4) 30deg,
+                    transparent 60deg,
+                    rgba(255, 20, 147, 0.3) 90deg,
+                    transparent 120deg,
+                    rgba(72, 61, 139, 0.4) 150deg,
+                    transparent 180deg,
+                    rgba(138, 43, 226, 0.4) 210deg,
+                    transparent 240deg,
+                    rgba(255, 20, 147, 0.3) 270deg,
+                    transparent 300deg,
+                    rgba(72, 61, 139, 0.4) 330deg,
+                    transparent 360deg
+                );
+            opacity: 0.5;
+            animation: galaxyRotate 120s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(3px);
+        }
+
+        @keyframes galaxyRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
         /* Animated noise background */
         .noise-bg {
             position: fixed;
@@ -1173,6 +1215,9 @@
     </style>
 </head>
 <body>
+    <!-- Rotating Galaxy -->
+    <div class="galaxy-bg"></div>
+
     <!-- Noise background -->
     <div class="noise-bg"></div>
 
