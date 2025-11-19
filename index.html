@@ -560,6 +560,27 @@
             font-style: italic;
         }
 
+        .challenge-timer {
+            font-size: 28px;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .challenge-timer.warning {
+            color: #ff0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 1);
+            animation: timerPulse 0.5s infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
         .challenge-content {
             background: rgba(0, 0, 0, 0.3);
             padding: 25px;
@@ -1123,6 +1144,7 @@
     <div class="challenge-modal" id="challengeModal">
         <h2 class="challenge-title">⚠ SIGNAL INTERFERENCE ⚠</h2>
         <p class="challenge-subtitle">Complete the challenge to establish connection</p>
+        <div class="challenge-timer" id="challengeTimer">⏱ 30s</div>
         <div class="challenge-content" id="challengeContent"></div>
         <div class="challenge-feedback" id="challengeFeedback"></div>
     </div>
@@ -1480,6 +1502,7 @@
         const challengeModal = document.getElementById('challengeModal');
         const challengeContent = document.getElementById('challengeContent');
         const challengeFeedback = document.getElementById('challengeFeedback');
+        const challengeTimer = document.getElementById('challengeTimer');
 
         // Update static level
         function updateStatic() {
@@ -1671,6 +1694,8 @@
 
         // Challenge system
         let currentChallenge = null;
+        let challengeTimerInterval = null;
+        let challengeTimeRemaining = 30;
 
         const challengeTypes = [
             {
@@ -1790,6 +1815,59 @@
             }
         ];
 
+        function startChallengeTimer() {
+            // Clear any existing timer
+            if (challengeTimerInterval) {
+                clearInterval(challengeTimerInterval);
+            }
+
+            // Reset timer
+            challengeTimeRemaining = 30;
+            challengeTimer.textContent = `⏱ ${challengeTimeRemaining}s`;
+            challengeTimer.classList.remove('warning');
+
+            // Start countdown
+            challengeTimerInterval = setInterval(() => {
+                challengeTimeRemaining--;
+                challengeTimer.textContent = `⏱ ${challengeTimeRemaining}s`;
+
+                // Add warning style when under 10 seconds
+                if (challengeTimeRemaining <= 10) {
+                    challengeTimer.classList.add('warning');
+                } else {
+                    challengeTimer.classList.remove('warning');
+                }
+
+                // Auto-fail when time runs out
+                if (challengeTimeRemaining <= 0) {
+                    clearInterval(challengeTimerInterval);
+                    handleChallengeTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleChallengeTimeout() {
+            // Show failure feedback
+            challengeFeedback.className = 'challenge-feedback error show';
+            challengeFeedback.textContent = '✗ TIME EXPIRED - CONNECTION LOST';
+            playIgnoreSound();
+
+            // Increase static significantly on timeout
+            state.staticLevel = Math.min(state.staticLevel + 0.25, 1);
+            updateStatic();
+
+            // Show glitch effect
+            commWindow.classList.add('glitch');
+            setTimeout(() => commWindow.classList.remove('glitch'), 500);
+
+            // Close modal after delay
+            setTimeout(() => {
+                challengeModal.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                challengeFeedback.className = 'challenge-feedback';
+            }, 2000);
+        }
+
         function showChallenge() {
             // 50% chance to show challenge
             if (Math.random() > 0.5) {
@@ -1828,6 +1906,9 @@
             challengeContent.innerHTML = html;
             challengeFeedback.className = 'challenge-feedback';
             challengeFeedback.textContent = '';
+
+            // Start the timer
+            startChallengeTimer();
 
             // Show modal with overlay
             challengeModal.classList.add('active');
@@ -1885,6 +1966,12 @@
         }
 
         function checkChallengeAnswer(userAnswer) {
+            // Clear the timer
+            if (challengeTimerInterval) {
+                clearInterval(challengeTimerInterval);
+                challengeTimerInterval = null;
+            }
+
             // For reaction and memory games, do exact match without case conversion
             const correct = (currentChallenge.inputType === 'reaction' || currentChallenge.inputType === 'memory')
                 ? userAnswer === currentChallenge.answer
@@ -1902,9 +1989,9 @@
                     showReplyChoices();
                 }, 1000);
             } else {
-                // Failure
+                // Failure - restart timer for retry
                 challengeFeedback.className = 'challenge-feedback error show';
-                challengeFeedback.textContent = '✗ INCORRECT - SIGNAL WEAKENED';
+                challengeFeedback.textContent = '✗ INCORRECT - TRY AGAIN';
                 playIgnoreSound();
 
                 // Increase static on failure
@@ -1915,7 +2002,10 @@
                 commWindow.classList.add('glitch');
                 setTimeout(() => commWindow.classList.remove('glitch'), 500);
 
-                // Allow retry
+                // Restart timer for retry
+                startChallengeTimer();
+
+                // Clear feedback after delay
                 setTimeout(() => {
                     challengeFeedback.className = 'challenge-feedback';
                 }, 2000);
@@ -2075,6 +2165,12 @@
 
         // Close forward menu when clicking overlay
         menuOverlay.addEventListener('click', () => {
+            // Clear challenge timer if active
+            if (challengeTimerInterval) {
+                clearInterval(challengeTimerInterval);
+                challengeTimerInterval = null;
+            }
+
             forwardMenu.classList.remove('active');
             challengeModal.classList.remove('active');
             menuOverlay.classList.remove('active');
