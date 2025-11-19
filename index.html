@@ -326,6 +326,37 @@
             opacity: 0.8;
         }
 
+        /* Back button */
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #ff69b4;
+            color: #ff69b4;
+            font-size: 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 105, 180, 0.2);
+            border-color: #fff;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
         /* Menu overlay */
         .menu-overlay {
             position: fixed;
@@ -700,6 +731,7 @@
         <div class="reply-choices-container" id="replyContainer">
             <div class="choice-title">⟨ CHOOSE YOUR RESPONSE ⟩</div>
             <div id="choicesContent"></div>
+            <button class="back-btn" id="replyBackBtn">← Back</button>
         </div>
 
         <!-- Main buttons -->
@@ -725,6 +757,7 @@
         <div class="forward-option" data-target="self">
             <span>🔄</span> Send to Myself
         </div>
+        <button class="back-btn" id="forwardBackBtn">← Back</button>
     </div>
 
     <!-- Transmission line -->
@@ -858,6 +891,20 @@
             playTone(1000, 0.1, 'square', 0.2);
             setTimeout(() => playTone(1000, 0.1, 'square', 0.2), 150);
             setTimeout(() => playTone(1200, 0.15, 'square', 0.2), 300);
+        }
+
+        // Play initial signal detection sound
+        function playInitialSound() {
+            // Rising frequency sequence to simulate signal detection
+            playTone(300, 0.2, 'sine', 0.15);
+            setTimeout(() => playTone(400, 0.2, 'sine', 0.15), 200);
+            setTimeout(() => playTone(600, 0.3, 'sine', 0.2), 400);
+            setTimeout(() => playTone(800, 0.4, 'sine', 0.2), 700);
+            setTimeout(() => {
+                // Add a quick beep pattern
+                playTone(1000, 0.1, 'square', 0.15);
+                setTimeout(() => playTone(1000, 0.1, 'square', 0.15), 150);
+            }, 1100);
         }
 
         // Play background static (continuous)
@@ -1045,6 +1092,8 @@
         const menuOverlay = document.getElementById('menuOverlay');
         const transmissionLine = document.getElementById('transmissionLine');
         const flashOverlay = document.getElementById('flashOverlay');
+        const replyBackBtn = document.getElementById('replyBackBtn');
+        const forwardBackBtn = document.getElementById('forwardBackBtn');
 
         // Update static level
         function updateStatic() {
@@ -1090,6 +1139,11 @@
 
         // Start the experience
         function startExperience() {
+            // Play initial signal detection sound
+            setTimeout(() => {
+                playInitialSound();
+            }, 500);
+
             setTimeout(() => {
                 state.currentRound = 1;
                 displayMessage(messages.round1.base);
@@ -1329,6 +1383,14 @@
             showReplyChoices();
         });
 
+        // Reply back button handler
+        replyBackBtn.addEventListener('click', () => {
+            replyContainer.classList.remove('active');
+            // Restore static level slightly
+            state.staticLevel = Math.min(state.staticLevel + 0.1, 0.7);
+            updateStatic();
+        });
+
         // Ignore button handler
         ignoreBtn.addEventListener('click', () => {
             state.ignoreCount++;
@@ -1374,6 +1436,12 @@
 
         // Close forward menu when clicking overlay
         menuOverlay.addEventListener('click', () => {
+            forwardMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        });
+
+        // Forward back button handler
+        forwardBackBtn.addEventListener('click', () => {
             forwardMenu.classList.remove('active');
             menuOverlay.classList.remove('active');
         });
