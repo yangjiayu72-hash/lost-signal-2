@@ -2152,26 +2152,6 @@
                 }
             },
             {
-                type: 'memory',
-                generate: () => {
-                    const symbols = ['⭐', '💎', '🌙', '⚡'];
-                    const sequence = [];
-                    const length = 3;
-
-                    for (let i = 0; i < length; i++) {
-                        sequence.push(symbols[Math.floor(Math.random() * symbols.length)]);
-                    }
-
-                    return {
-                        question: `Remember this sequence:<br><span style="font-size: 32px;">${sequence.join(' ')}</span><br><br>Click to continue...`,
-                        answer: sequence.join(''),
-                        inputType: 'memory',
-                        sequence: sequence,
-                        symbols: symbols
-                    };
-                }
-            },
-            {
                 type: 'choice',
                 generate: () => {
                     const questions = [
@@ -2293,8 +2273,6 @@
                     html += `<div class="challenge-option" data-answer="${option}" style="flex: 0 0 80px; height: 80px; font-size: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">${option}</div>`;
                 });
                 html += '</div>';
-            } else if (currentChallenge.inputType === 'memory') {
-                html += '<button class="challenge-submit" id="memoryNext">Continue</button>';
             }
 
             challengeContent.innerHTML = html;
@@ -2331,36 +2309,7 @@
                         checkChallengeAnswer(e.target.dataset.answer);
                     });
                 });
-            } else if (currentChallenge.inputType === 'memory') {
-                const nextBtn = document.getElementById('memoryNext');
-                nextBtn.addEventListener('click', () => {
-                    showMemoryRecallPhase();
-                });
             }
-        }
-
-        // Show memory recall phase
-        function showMemoryRecallPhase() {
-            let html = '<div class="challenge-question">Click the symbols in order:</div>';
-            html += '<div class="challenge-options" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 15px; justify-content: center;">';
-            currentChallenge.symbols.forEach(symbol => {
-                html += `<div class="challenge-option memory-symbol" data-symbol="${symbol}" style="flex: 0 0 80px; height: 80px; font-size: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">${symbol}</div>`;
-            });
-            html += '</div>';
-            challengeContent.innerHTML = html;
-
-            let userSequence = [];
-            document.querySelectorAll('.memory-symbol').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    userSequence.push(e.target.dataset.symbol);
-                    e.target.style.opacity = '0.5';
-                    e.target.style.pointerEvents = 'none';
-
-                    if (userSequence.length === currentChallenge.sequence.length) {
-                        checkChallengeAnswer(userSequence.join(''));
-                    }
-                });
-            });
         }
 
         function checkChallengeAnswer(userAnswer) {
@@ -2370,8 +2319,8 @@
                 challengeTimerInterval = null;
             }
 
-            // For reaction and memory games, do exact match without case conversion
-            const correct = (currentChallenge.inputType === 'reaction' || currentChallenge.inputType === 'memory')
+            // For reaction game, do exact match without case conversion
+            const correct = (currentChallenge.inputType === 'reaction')
                 ? userAnswer === currentChallenge.answer
                 : userAnswer.toUpperCase() === currentChallenge.answer.toUpperCase();
 
@@ -2399,13 +2348,6 @@
                 // Show glitch effect
                 commWindow.classList.add('glitch');
                 setTimeout(() => commWindow.classList.remove('glitch'), 500);
-
-                // Reset memory game UI if it's a memory challenge
-                if (currentChallenge.inputType === 'memory') {
-                    setTimeout(() => {
-                        showMemoryRecallPhase();
-                    }, 1000);
-                }
 
                 // Restart timer for retry
                 startChallengeTimer();
