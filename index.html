@@ -65,15 +65,42 @@
 
         /* Communication window */
         .comm-window {
-            background: #ff1493;
+            background: linear-gradient(135deg, #ff1493 0%, #c71585 100%);
             border: 3px solid #ff69b4;
-            border-radius: 10px;
-            padding: 30px;
-            min-height: 400px;
+            border-radius: 12px;
+            padding: 35px;
+            min-height: 450px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
-            transition: all 0.3s ease;
+            box-shadow:
+                0 0 40px rgba(255, 20, 147, 0.6),
+                inset 0 0 60px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .comm-window::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.03) 10px,
+                rgba(255, 255, 255, 0.03) 20px
+            );
+            animation: scanline 10s linear infinite;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
         }
 
         .comm-window.glitch {
@@ -172,70 +199,151 @@
 
         .main-btn {
             flex: 1;
-            padding: 20px;
-            font-size: 20px;
+            padding: 22px;
+            font-size: 19px;
             font-weight: bold;
             border: 3px solid #ff69b4;
-            background: rgba(255, 20, 147, 0.3);
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.4), rgba(199, 21, 133, 0.4));
             color: #fff;
             cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Courier New', monospace;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 4px 15px rgba(255, 20, 147, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .main-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .main-btn:hover::before {
+            left: 100%;
         }
 
         .main-btn:hover {
-            background: rgba(255, 20, 147, 0.6);
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.8);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.7), rgba(199, 21, 133, 0.7));
+            box-shadow:
+                0 0 30px rgba(255, 20, 147, 1),
+                0 8px 20px rgba(255, 20, 147, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            border-color: #fff;
         }
 
         .main-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+            box-shadow:
+                0 0 20px rgba(255, 20, 147, 0.8),
+                0 4px 10px rgba(255, 20, 147, 0.4);
         }
 
-        /* Reply input */
-        .reply-input-container {
+        /* Reply choices */
+        .reply-choices-container {
             margin-top: 20px;
             opacity: 0;
             max-height: 0;
             overflow: hidden;
-            transition: all 0.3s;
+            transition: all 0.4s ease;
         }
 
-        .reply-input-container.active {
+        .reply-choices-container.active {
             opacity: 1;
-            max-height: 150px;
+            max-height: 400px;
         }
 
-        .reply-input {
-            width: 100%;
-            padding: 15px;
+        .choice-title {
+            color: #ff69b4;
             font-size: 16px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #ff69b4;
-            color: #fff;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 10px;
-        }
-
-        .submit-btn {
-            padding: 10px 30px;
-            background: #ff1493;
-            border: 2px solid #ff69b4;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin-bottom: 15px;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
         }
 
-        .submit-btn:hover {
-            background: #ff69b4;
+        .reply-choice {
+            padding: 18px 25px;
+            margin: 12px 0;
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.15), rgba(255, 105, 180, 0.15));
+            border: 2px solid #ff69b4;
+            color: #fff;
+            font-size: 17px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
+        }
+
+        .reply-choice::before {
+            content: '▶';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff1493;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .reply-choice:hover {
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.35), rgba(255, 105, 180, 0.35));
+            transform: translateX(8px);
+            box-shadow: 0 6px 25px rgba(255, 20, 147, 0.5);
+            border-color: #fff;
+        }
+
+        .reply-choice:hover::before {
+            left: 10px;
+        }
+
+        .reply-choice:active {
+            transform: translateX(4px) scale(0.98);
+        }
+
+        .choice-effect {
+            display: block;
+            font-size: 12px;
+            color: #ff69b4;
+            margin-top: 5px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        /* Menu overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            pointer-events: all;
         }
 
         /* Forward menu */
@@ -243,37 +351,80 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 20, 147, 0.95);
+            transform: translate(-50%, -50%) scale(0.9);
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.98), rgba(199, 21, 133, 0.98));
             border: 3px solid #ff69b4;
-            border-radius: 10px;
-            padding: 30px;
+            border-radius: 15px;
+            padding: 35px;
             z-index: 100;
             display: none;
-            box-shadow: 0 0 50px rgba(255, 20, 147, 0.8);
+            box-shadow:
+                0 0 60px rgba(255, 20, 147, 1),
+                0 20px 50px rgba(0, 0, 0, 0.5),
+                inset 0 0 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            min-width: 400px;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .forward-menu.active {
             display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .forward-menu h2 {
+            color: #fff;
+            margin-bottom: 25px;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            letter-spacing: 3px;
         }
 
         .forward-option {
-            padding: 15px 30px;
-            margin: 10px 0;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #fff;
+            padding: 18px 35px;
+            margin: 15px 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+            border: 2px solid #ff69b4;
             color: #fff;
             font-size: 18px;
             cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Courier New', monospace;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .forward-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .forward-option:hover::before {
+            left: 100%;
         }
 
         .forward-option:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            transform: translateX(8px) scale(1.02);
+            border-color: #fff;
+            box-shadow:
+                0 0 20px rgba(255, 105, 180, 0.6),
+                0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .forward-option:active {
+            transform: translateX(4px) scale(0.98);
         }
 
         /* Transmission line animation */
@@ -545,10 +696,10 @@
             </div>
         </div>
 
-        <!-- Reply input -->
-        <div class="reply-input-container" id="replyContainer">
-            <input type="text" class="reply-input" id="replyInput" placeholder="Type your reply (max 40 characters)..." maxlength="40">
-            <button class="submit-btn" id="submitReply">Send</button>
+        <!-- Reply choices -->
+        <div class="reply-choices-container" id="replyContainer">
+            <div class="choice-title">⟨ CHOOSE YOUR RESPONSE ⟩</div>
+            <div id="choicesContent"></div>
         </div>
 
         <!-- Main buttons -->
@@ -559,12 +710,21 @@
         </div>
     </div>
 
+    <!-- Menu overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
     <!-- Forward menu -->
     <div class="forward-menu" id="forwardMenu">
-        <h2 style="color: #fff; margin-bottom: 20px; text-align: center;">FORWARD TO:</h2>
-        <div class="forward-option" data-target="friend">Send to Friend</div>
-        <div class="forward-option" data-target="archive">Send to Archive</div>
-        <div class="forward-option" data-target="self">Send to Myself</div>
+        <h2>⟨ FORWARD TO ⟩</h2>
+        <div class="forward-option" data-target="friend">
+            <span>📡</span> Send to Friend
+        </div>
+        <div class="forward-option" data-target="archive">
+            <span>📦</span> Send to Archive
+        </div>
+        <div class="forward-option" data-target="self">
+            <span>🔄</span> Send to Myself
+        </div>
     </div>
 
     <!-- Transmission line -->
@@ -742,9 +902,10 @@
             totalActions: 0,
             currentRound: 0,
             staticLevel: 0.5,
-            lastReplyText: '',
+            lastReplyChoice: '',
             consecutiveIgnores: 0,
-            replies: []
+            replies: [],
+            choiceHistory: []
         };
 
         // Message content for rounds
@@ -778,6 +939,50 @@
                                Am I sending these messages to myself?`,
                 hint: 'door-opening'
             }
+        };
+
+        // Reply choices for each round
+        const replyChoices = {
+            round1: [
+                {
+                    text: "I can see you! Stay where you are, help is coming.",
+                    effect: "Reduce static significantly",
+                    action: 'hopeful',
+                    staticChange: -0.25
+                },
+                {
+                    text: "Try to find an exit marker. Look for emergency signs.",
+                    effect: "Show directional hints",
+                    action: 'practical',
+                    staticChange: -0.15
+                },
+                {
+                    text: "Don't trust what you see. The hallway might be a loop.",
+                    effect: "Increase uncertainty",
+                    action: 'skeptical',
+                    staticChange: 0.1
+                }
+            ],
+            round2: [
+                {
+                    text: "Keep moving forward! You're almost there!",
+                    effect: "Maximum clarity boost",
+                    action: 'encourage',
+                    staticChange: -0.3
+                },
+                {
+                    text: "Wait... do you recognize anything from before?",
+                    effect: "Trigger memory",
+                    action: 'question',
+                    staticChange: 0
+                },
+                {
+                    text: "Stop. Turn around. Go back to where you started.",
+                    effect: "Reverse direction",
+                    action: 'return',
+                    staticChange: 0.15
+                }
+            ]
         };
 
         // Visual hints
@@ -835,9 +1040,9 @@
         const ignoreBtn = document.getElementById('ignoreBtn');
         const forwardBtn = document.getElementById('forwardBtn');
         const replyContainer = document.getElementById('replyContainer');
-        const replyInput = document.getElementById('replyInput');
-        const submitReply = document.getElementById('submitReply');
+        const choicesContent = document.getElementById('choicesContent');
         const forwardMenu = document.getElementById('forwardMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
         const transmissionLine = document.getElementById('transmissionLine');
         const flashOverlay = document.getElementById('flashOverlay');
 
@@ -913,6 +1118,46 @@
             }
         }
 
+        // Get advanced round 2 message based on choices
+        function getRound2MessageAdvanced() {
+            if (state.forwardToSelfUsed) {
+                return messages.round2.self_forward;
+            }
+
+            // Check what choice was made in round 1
+            const round1Choice = state.choiceHistory.find(c => c.round === 1);
+
+            if (round1Choice) {
+                if (round1Choice.action === 'hopeful') {
+                    return `Your words... they helped.<br><br>
+                            The static is clearing.<br>
+                            I can see light at the end of the corridor now.<br><br>
+                            The door... it's opening.<br>
+                            Thank you for believing in me.`;
+                } else if (round1Choice.action === 'practical') {
+                    return `I found it! An emergency exit sign!<br><br>
+                            It's faint, but it's there.<br>
+                            Following your advice... moving toward it...<br><br>
+                            The hallway is changing.<br>
+                            I think... I think this is the way out.`;
+                } else if (round1Choice.action === 'skeptical') {
+                    return `You were right to doubt.<br><br>
+                            This place... it's not real.<br>
+                            The same door. Over and over.<br><br>
+                            I've been here before, haven't I?<br>
+                            How many times have I <span class="corrupted-char">█████</span> this message?`;
+                }
+            }
+
+            // Fallback to ignore-dominant if lots of ignores
+            if (state.ignoreCount >= 2) {
+                return messages.round2.ignore_dominant;
+            }
+
+            // Default
+            return messages.round2.forward_used;
+        }
+
         // Check if should show ending
         function checkForEnding() {
             if (state.totalActions >= 3 && state.currentRound === 2) {
@@ -984,63 +1229,104 @@
             document.getElementById('summaryScreen').classList.add('active');
         }
 
-        // Reply button handler
-        replyBtn.addEventListener('click', () => {
-            replyContainer.classList.add('active');
-            replyInput.focus();
+        // Show reply choices
+        function showReplyChoices() {
+            const roundKey = `round${state.currentRound}`;
+            const choices = replyChoices[roundKey];
 
-            // Reduce static when input is focused
+            if (!choices) return;
+
+            // Clear previous choices
+            choicesContent.innerHTML = '';
+
+            // Create choice buttons
+            choices.forEach((choice, index) => {
+                const choiceDiv = document.createElement('div');
+                choiceDiv.className = 'reply-choice';
+                choiceDiv.innerHTML = `
+                    ${choice.text}
+                    <span class="choice-effect">[${choice.effect}]</span>
+                `;
+                choiceDiv.dataset.index = index;
+                choiceDiv.dataset.action = choice.action;
+
+                choiceDiv.addEventListener('click', () => handleChoiceSelection(choice, index));
+
+                choicesContent.appendChild(choiceDiv);
+            });
+
+            // Show container
+            replyContainer.classList.add('active');
+
+            // Reduce static when choices shown
             state.staticLevel = Math.max(state.staticLevel - 0.15, 0.1);
             updateStatic();
-        });
+        }
 
-        // Submit reply handler
-        submitReply.addEventListener('click', () => {
-            const text = replyInput.value.trim();
-            if (text.length === 0) return;
-
+        // Handle choice selection
+        function handleChoiceSelection(choice, index) {
             state.replyCount++;
             state.totalActions++;
             state.consecutiveIgnores = 0;
-            state.replies.push(text);
-            state.lastReplyText = text.toLowerCase();
+            state.lastReplyChoice = choice.action;
+            state.choiceHistory.push({
+                round: state.currentRound,
+                action: choice.action,
+                text: choice.text
+            });
 
             // Play sound
             playReplySound();
 
-            // Reduce static
-            state.staticLevel = Math.max(state.staticLevel - 0.2, 0.2);
+            // Apply static change
+            state.staticLevel = Math.max(state.staticLevel + choice.staticChange, 0.1);
             updateStatic();
 
-            // Check for keywords
-            if (state.lastReplyText.includes('run')) {
+            // Special effects based on action
+            if (choice.action === 'hopeful') {
+                showHiddenMessage('SIGNAL STRENGTHENING...');
+                showVisualHint('corridor-endless');
+            } else if (choice.action === 'practical') {
+                showFlash(0);
+                showHiddenMessage('SEARCHING FOR EXIT...');
+            } else if (choice.action === 'skeptical') {
+                commWindow.classList.add('glitch');
+                setTimeout(() => commWindow.classList.remove('glitch'), 500);
+                showHiddenMessage('DOUBT DETECTED');
+            } else if (choice.action === 'encourage') {
+                state.staticLevel = Math.max(state.staticLevel - 0.3, 0.05);
+                updateStatic();
+                showHiddenMessage('HOPE RESTORED');
+            } else if (choice.action === 'question') {
                 showFlash(1);
-                showHiddenMessage('RUN!');
-            } else if (state.lastReplyText.includes('stay')) {
-                state.staticLevel += 0.1;
-                updateStatic();
-                showHiddenMessage('Staying... but the lights...');
-            } else if (state.lastReplyText.includes('help')) {
-                state.staticLevel = Math.max(state.staticLevel - 0.1, 0.1);
-                updateStatic();
+                showHiddenMessage('MEMORY FRAGMENTED');
+            } else if (choice.action === 'return') {
+                showVisualHint('corridor-shadow');
+                showHiddenMessage('RETRACING STEPS...');
             }
 
-            // Hide input
+            // Hide choices
             replyContainer.classList.remove('active');
-            replyInput.value = '';
 
             // Progress to next round if needed
             if (state.currentRound === 1) {
                 setTimeout(() => {
                     state.currentRound = 2;
-                    displayMessage(getRound2Message());
+                    displayMessage(getRound2MessageAdvanced());
                     showVisualHint(messages.round2.hint);
                     showFlash(1);
                     checkForEnding();
-                }, 1500);
+                }, 2000);
             } else {
-                checkForEnding();
+                setTimeout(() => {
+                    checkForEnding();
+                }, 1500);
             }
+        }
+
+        // Reply button handler
+        replyBtn.addEventListener('click', () => {
+            showReplyChoices();
         });
 
         // Ignore button handler
@@ -1083,6 +1369,13 @@
         // Forward button handler
         forwardBtn.addEventListener('click', () => {
             forwardMenu.classList.add('active');
+            menuOverlay.classList.add('active');
+        });
+
+        // Close forward menu when clicking overlay
+        menuOverlay.addEventListener('click', () => {
+            forwardMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
         });
 
         // Forward option handlers
@@ -1106,8 +1399,9 @@
                 // Play sound
                 playForwardSound();
 
-                // Close menu
+                // Close menu and overlay
                 forwardMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
 
                 // Show transmission animation
                 showTransmission(target);
