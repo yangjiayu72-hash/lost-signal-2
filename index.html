@@ -2090,29 +2090,33 @@
             } else if (currentChallenge.inputType === 'memory') {
                 const nextBtn = document.getElementById('memoryNext');
                 nextBtn.addEventListener('click', () => {
-                    // Show recall phase
-                    let html = '<div class="challenge-question">Click the symbols in order:</div>';
-                    html += '<div class="challenge-options" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 15px; justify-content: center;">';
-                    currentChallenge.symbols.forEach(symbol => {
-                        html += `<div class="challenge-option memory-symbol" data-symbol="${symbol}" style="flex: 0 0 80px; height: 80px; font-size: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">${symbol}</div>`;
-                    });
-                    html += '</div>';
-                    challengeContent.innerHTML = html;
-
-                    let userSequence = [];
-                    document.querySelectorAll('.memory-symbol').forEach(option => {
-                        option.addEventListener('click', (e) => {
-                            userSequence.push(e.target.dataset.symbol);
-                            e.target.style.opacity = '0.5';
-                            e.target.style.pointerEvents = 'none';
-
-                            if (userSequence.length === currentChallenge.sequence.length) {
-                                checkChallengeAnswer(userSequence.join(''));
-                            }
-                        });
-                    });
+                    showMemoryRecallPhase();
                 });
             }
+        }
+
+        // Show memory recall phase
+        function showMemoryRecallPhase() {
+            let html = '<div class="challenge-question">Click the symbols in order:</div>';
+            html += '<div class="challenge-options" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 15px; justify-content: center;">';
+            currentChallenge.symbols.forEach(symbol => {
+                html += `<div class="challenge-option memory-symbol" data-symbol="${symbol}" style="flex: 0 0 80px; height: 80px; font-size: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">${symbol}</div>`;
+            });
+            html += '</div>';
+            challengeContent.innerHTML = html;
+
+            let userSequence = [];
+            document.querySelectorAll('.memory-symbol').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    userSequence.push(e.target.dataset.symbol);
+                    e.target.style.opacity = '0.5';
+                    e.target.style.pointerEvents = 'none';
+
+                    if (userSequence.length === currentChallenge.sequence.length) {
+                        checkChallengeAnswer(userSequence.join(''));
+                    }
+                });
+            });
         }
 
         function checkChallengeAnswer(userAnswer) {
@@ -2151,6 +2155,13 @@
                 // Show glitch effect
                 commWindow.classList.add('glitch');
                 setTimeout(() => commWindow.classList.remove('glitch'), 500);
+
+                // Reset memory game UI if it's a memory challenge
+                if (currentChallenge.inputType === 'memory') {
+                    setTimeout(() => {
+                        showMemoryRecallPhase();
+                    }, 1000);
+                }
 
                 // Restart timer for retry
                 startChallengeTimer();
