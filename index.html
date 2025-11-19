@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost Signal (迷失信号)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated noise background */
+        .noise-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 255, 255, 0.03) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.03) 3px
+                );
+            opacity: 0.3;
+            animation: noise 0.2s infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes noise {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-2%, -2%); }
+            20% { transform: translate(2%, 2%); }
+            30% { transform: translate(-2%, 2%); }
+            40% { transform: translate(2%, -2%); }
+            50% { transform: translate(-2%, -2%); }
+            60% { transform: translate(2%, 2%); }
+            70% { transform: translate(-2%, 2%); }
+            80% { transform: translate(2%, -2%); }
+            90% { transform: translate(-2%, -2%); }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* Communication window */
+        .comm-window {
+            background: #ff1493;
+            border: 3px solid #ff69b4;
+            border-radius: 10px;
+            padding: 30px;
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .comm-window.glitch {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Static overlay */
+        .static-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.1) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.1) 3px
+                );
+            opacity: 0.5;
+            pointer-events: none;
+            animation: staticMove 0.1s infinite;
+            z-index: 5;
+        }
+
+        @keyframes staticMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        /* Message content */
+        .message-content {
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.8;
+            min-height: 300px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .glitch-text {
+            animation: textGlitch 0.5s infinite;
+        }
+
+        @keyframes textGlitch {
+            0% { opacity: 1; }
+            25% { opacity: 0.8; transform: translateX(-2px); }
+            50% { opacity: 0.6; transform: translateX(2px); }
+            75% { opacity: 0.9; transform: translateX(-1px); }
+            100% { opacity: 1; }
+        }
+
+        .corrupted-char {
+            color: #000;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 0 2px;
+        }
+
+        /* Visual hints container */
+        .visual-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 60%;
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .visual-hint.active {
+            opacity: 0.3;
+        }
+
+        /* Buttons container */
+        .button-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .main-btn {
+            flex: 1;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 3px solid #ff69b4;
+            background: rgba(255, 20, 147, 0.3);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .main-btn:hover {
+            background: rgba(255, 20, 147, 0.6);
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .main-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Reply input */
+        .reply-input-container {
+            margin-top: 20px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .reply-input-container.active {
+            opacity: 1;
+            max-height: 150px;
+        }
+
+        .reply-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff69b4;
+            color: #fff;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+        }
+
+        .submit-btn {
+            padding: 10px 30px;
+            background: #ff1493;
+            border: 2px solid #ff69b4;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            background: #ff69b4;
+        }
+
+        /* Forward menu */
+        .forward-menu {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 20, 147, 0.95);
+            border: 3px solid #ff69b4;
+            border-radius: 10px;
+            padding: 30px;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 0 50px rgba(255, 20, 147, 0.8);
+        }
+
+        .forward-menu.active {
+            display: block;
+        }
+
+        .forward-option {
+            padding: 15px 30px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #fff;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+
+        .forward-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        /* Transmission line animation */
+        .transmission-line {
+            position: fixed;
+            width: 4px;
+            background: linear-gradient(to bottom, #ff1493, #ff69b4, #fff);
+            z-index: 99;
+            opacity: 0;
+            box-shadow: 0 0 10px #ff1493;
+        }
+
+        .transmission-line.active {
+            animation: transmit 1s ease-out;
+        }
+
+        @keyframes transmit {
+            0% { opacity: 1; height: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; height: 200px; }
+        }
+
+        /* Ending screens */
+        .ending-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .ending-screen.active {
+            display: flex;
+        }
+
+        .ending-title {
+            font-size: 48px;
+            color: #ff1493;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .ending-text {
+            font-size: 24px;
+            color: #fff;
+            max-width: 800px;
+            line-height: 1.8;
+            margin-bottom: 50px;
+        }
+
+        .ending-visual {
+            width: 300px;
+            height: 300px;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        /* Summary screen */
+        .summary-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 250;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            overflow-y: auto;
+        }
+
+        .summary-screen.active {
+            display: flex;
+        }
+
+        .summary-title {
+            font-size: 36px;
+            color: #ff1493;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .summary-stats {
+            background: rgba(255, 20, 147, 0.2);
+            border: 2px solid #ff69b4;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .stat-row {
+            color: #fff;
+            font-size: 20px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-label {
+            color: #ff69b4;
+        }
+
+        .summary-explanation {
+            color: #fff;
+            font-size: 18px;
+            max-width: 700px;
+            line-height: 1.8;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        /* Loop animation for time loop ending */
+        .loop-animation {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .loop-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 4px solid #ff1493;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
+        }
+
+        /* Branch animation for branching timeline */
+        .branch-animation {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .branch-line {
+            position: absolute;
+            width: 4px;
+            height: 150px;
+            background: #ff1493;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .branch-line.left {
+            top: 150px;
+            transform: translateX(-50%) rotate(-30deg);
+            opacity: 0.3;
+        }
+
+        .branch-line.center {
+            top: 0;
+            box-shadow: 0 0 20px #ff1493;
+        }
+
+        .branch-line.right {
+            top: 150px;
+            transform: translateX(-50%) rotate(30deg);
+            opacity: 0.3;
+        }
+
+        /* Dissolution animation */
+        .dissolution-animation {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            animation: dissolve 5s ease-out forwards;
+        }
+
+        @keyframes dissolve {
+            0% { opacity: 1; filter: blur(0); }
+            100% { opacity: 0; filter: blur(20px); }
+        }
+
+        .dissolution-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #ff1493;
+            white-space: nowrap;
+        }
+
+        /* Flash effects */
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .flash-overlay.active {
+            animation: flash 0.3s;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0; }
+        }
+
+        /* Hidden message */
+        .hidden-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            color: #fff;
+            opacity: 0;
+            z-index: 10;
+            text-align: center;
+            text-shadow: 0 0 10px #ff1493;
+            pointer-events: none;
+        }
+
+        .hidden-message.active {
+            animation: hiddenFlash 1s;
+        }
+
+        @keyframes hiddenFlash {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Noise background -->
+    <div class="noise-bg"></div>
+
+    <!-- Main container -->
+    <div class="container">
+        <!-- Communication window -->
+        <div class="comm-window" id="commWindow">
+            <div class="static-overlay" id="staticOverlay"></div>
+            <div class="visual-hint" id="visualHint"></div>
+            <div class="hidden-message" id="hiddenMessage"></div>
+            <div class="message-content" id="messageContent">
+                <p class="glitch-text">/// SIGNAL DETECTED ///</p>
+                <p>Initializing connection...</p>
+            </div>
+        </div>
+
+        <!-- Reply input -->
+        <div class="reply-input-container" id="replyContainer">
+            <input type="text" class="reply-input" id="replyInput" placeholder="Type your reply (max 40 characters)..." maxlength="40">
+            <button class="submit-btn" id="submitReply">Send</button>
+        </div>
+
+        <!-- Main buttons -->
+        <div class="button-container">
+            <button class="main-btn" id="replyBtn">Reply</button>
+            <button class="main-btn" id="ignoreBtn">Ignore</button>
+            <button class="main-btn" id="forwardBtn">Forward</button>
+        </div>
+    </div>
+
+    <!-- Forward menu -->
+    <div class="forward-menu" id="forwardMenu">
+        <h2 style="color: #fff; margin-bottom: 20px; text-align: center;">FORWARD TO:</h2>
+        <div class="forward-option" data-target="friend">Send to Friend</div>
+        <div class="forward-option" data-target="archive">Send to Archive</div>
+        <div class="forward-option" data-target="self">Send to Myself</div>
+    </div>
+
+    <!-- Transmission line -->
+    <div class="transmission-line" id="transmissionLine"></div>
+
+    <!-- Flash overlay -->
+    <div class="flash-overlay" id="flashOverlay"></div>
+
+    <!-- Ending screens -->
+    <div class="ending-screen" id="endingTimeLoop">
+        <h1 class="ending-title">Time Loop</h1>
+        <div class="ending-visual">
+            <div class="loop-animation">
+                <div class="loop-circle"></div>
+                <div class="loop-circle" style="animation-delay: 0.5s;"></div>
+            </div>
+        </div>
+        <div class="ending-text">
+            The signal returns to where it began. You were the one lost in the corridor all along.
+            <br><br>
+            Every message you received was one you sent yourself.
+            <br>
+            The loop is eternal.
+        </div>
+    </div>
+
+    <div class="ending-screen" id="endingBranch">
+        <h1 class="ending-title">Branching Timeline</h1>
+        <div class="ending-visual">
+            <div class="branch-animation">
+                <div class="branch-line left"></div>
+                <div class="branch-line center"></div>
+                <div class="branch-line right"></div>
+            </div>
+        </div>
+        <div class="ending-text">
+            Through persistent communication, you stabilized the signal.
+            <br><br>
+            A new timeline emerged from the noise.
+            <br>
+            The sender found their way to the exit, guided by your words.
+        </div>
+    </div>
+
+    <div class="ending-screen" id="endingDissolution">
+        <h1 class="ending-title">Dissolution</h1>
+        <div class="ending-visual">
+            <div class="dissolution-animation">
+                <div class="dissolution-text">SIGNAL LOST</div>
+            </div>
+        </div>
+        <div class="ending-text">
+            The signal was lost in the noise.
+            <br><br>
+            Without your attention, the sender faded into static.
+            <br>
+            Only silence remains.
+        </div>
+    </div>
+
+    <!-- Summary screen -->
+    <div class="summary-screen" id="summaryScreen">
+        <h1 class="summary-title">Signal Analysis Complete</h1>
+        <div class="summary-stats">
+            <div class="stat-row">
+                <span class="stat-label">Total Actions:</span>
+                <span id="statTotal">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Replies Sent:</span>
+                <span id="statReply">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Signals Ignored:</span>
+                <span id="statIgnore">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Forwards Made:</span>
+                <span id="statForward">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Forwarded to Friend:</span>
+                <span id="statFriend">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Forwarded to Archive:</span>
+                <span id="statArchive">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Forwarded to Self:</span>
+                <span id="statSelf">0</span>
+            </div>
+        </div>
+        <div class="summary-explanation" id="summaryExplanation"></div>
+    </div>
+
+    <script>
+        // Audio context for sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Play tone
+        function playTone(frequency, duration, type = 'sine', volume = 0.3) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            gainNode.gain.value = volume;
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        // Play reply sound (gentle electronic chime)
+        function playReplySound() {
+            playTone(800, 0.1, 'sine', 0.2);
+            setTimeout(() => playTone(1200, 0.15, 'sine', 0.15), 100);
+        }
+
+        // Play ignore sound (distorted hum)
+        function playIgnoreSound() {
+            playTone(100, 0.3, 'sawtooth', 0.25);
+            setTimeout(() => playTone(80, 0.3, 'sawtooth', 0.2), 150);
+        }
+
+        // Play forward sound (beep sequence)
+        function playForwardSound() {
+            playTone(1000, 0.1, 'square', 0.2);
+            setTimeout(() => playTone(1000, 0.1, 'square', 0.2), 150);
+            setTimeout(() => playTone(1200, 0.15, 'square', 0.2), 300);
+        }
+
+        // Play background static (continuous)
+        function playStaticNoise() {
+            const bufferSize = audioContext.sampleRate * 2;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = audioContext.createBufferSource();
+            noise.buffer = buffer;
+            noise.loop = true;
+
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.05;
+
+            noise.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            noise.start(0);
+
+            return gainNode;
+        }
+
+        // Start background static
+        let staticGain = null;
+        setTimeout(() => {
+            staticGain = playStaticNoise();
+        }, 100);
+
+        // State tracking
+        const state = {
+            replyCount: 0,
+            ignoreCount: 0,
+            forwardCount: 0,
+            forwardToFriend: 0,
+            forwardToArchive: 0,
+            forwardToSelf: 0,
+            forwardToSelfUsed: false,
+            totalActions: 0,
+            currentRound: 0,
+            staticLevel: 0.5,
+            lastReplyText: '',
+            consecutiveIgnores: 0,
+            replies: []
+        };
+
+        // Message content for rounds
+        const messages = {
+            round1: {
+                base: `I can't find the exit. The hallway keeps repeating.<br><br>
+                       Can you see me?<br><br>
+                       The lights... they keep <span class="corrupted-char">█</span>lic<span class="corrupted-char">█</span>ering.<br>
+                       Door number <span class="corrupted-char">█</span>07... or was it 70<span class="corrupted-char">█</span>?<br><br>
+                       Plea<span class="corrupted-char">█</span>e... if you can read this...`,
+                hint: 'corridor-shadow'
+            },
+            round2: {
+                reply_dominant: `Thank you... the signal is clearer now.<br><br>
+                                 I can see the exit ahead. It's glowing.<br><br>
+                                 The corridor is straightening out...<br>
+                                 I think... I think I'm going to make it.<br><br>
+                                 Because you didn't look away.`,
+                ignore_dominant: `<span class="corrupted-char">█████</span>... can't...<span class="corrupted-char">███</span><br><br>
+                                  <span class="corrupted-char">██</span>losing... sig<span class="corrupted-char">███</span><br>
+                                  The walls are <span class="corrupted-char">████████</span><br><br>
+                                  Why... won't you... <span class="corrupted-char">██████</span>`,
+                forward_used: `Who else is there?<br><br>
+                                I feel... multiple presences.<br>
+                                The corridor is branching...<br><br>
+                                Which path is real?`,
+                self_forward: `Wait... this handwriting...<br><br>
+                               It looks like... mine?<br>
+                               How do I know this corridor so well?<br><br>
+                               Have I... been here before?<br>
+                               Am I sending these messages to myself?`,
+                hint: 'door-opening'
+            }
+        };
+
+        // Visual hints
+        const visualHints = {
+            'corridor-shadow': `
+                <svg width="100%" height="100%" viewBox="0 0 400 300">
+                    <rect x="50" y="0" width="100" height="300" fill="#333" opacity="0.5"/>
+                    <rect x="250" y="0" width="100" height="300" fill="#333" opacity="0.5"/>
+                    <rect x="150" y="0" width="100" height="300" fill="#444" opacity="0.3"/>
+                    <ellipse cx="200" cy="250" rx="30" ry="60" fill="#000" opacity="0.7"/>
+                </svg>
+            `,
+            'door-opening': `
+                <svg width="100%" height="100%" viewBox="0 0 400 300">
+                    <rect x="150" y="50" width="100" height="200" fill="#222" opacity="0.6"/>
+                    <rect x="170" y="50" width="60" height="200" fill="#111" opacity="0.8"/>
+                    <circle cx="230" cy="150" r="5" fill="#888"/>
+                    <rect x="160" y="60" width="5" height="180" fill="#fff" opacity="0.3"/>
+                </svg>
+            `,
+            'corridor-endless': `
+                <svg width="100%" height="100%" viewBox="0 0 400 300">
+                    <polygon points="100,0 300,0 250,300 150,300" fill="#333" opacity="0.4"/>
+                    <rect x="180" y="100" width="40" height="100" fill="#222" opacity="0.6"/>
+                    <rect x="185" y="150" width="30" height="50" fill="#111" opacity="0.5"/>
+                </svg>
+            `
+        };
+
+        // Flash images (scary moments)
+        const flashImages = [
+            'data:image/svg+xml;base64,' + btoa(`
+                <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="800" height="600" fill="#000"/>
+                    <circle cx="400" cy="300" r="50" fill="#fff" opacity="0.3"/>
+                    <circle cx="400" cy="300" r="20" fill="#000"/>
+                </svg>
+            `),
+            'data:image/svg+xml;base64,' + btoa(`
+                <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="800" height="600" fill="#111"/>
+                    <rect x="300" y="100" width="200" height="400" fill="#222"/>
+                    <rect x="320" y="100" width="160" height="400" fill="#000"/>
+                </svg>
+            `)
+        ];
+
+        // DOM elements
+        const commWindow = document.getElementById('commWindow');
+        const messageContent = document.getElementById('messageContent');
+        const staticOverlay = document.getElementById('staticOverlay');
+        const visualHint = document.getElementById('visualHint');
+        const hiddenMessage = document.getElementById('hiddenMessage');
+        const replyBtn = document.getElementById('replyBtn');
+        const ignoreBtn = document.getElementById('ignoreBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        const replyContainer = document.getElementById('replyContainer');
+        const replyInput = document.getElementById('replyInput');
+        const submitReply = document.getElementById('submitReply');
+        const forwardMenu = document.getElementById('forwardMenu');
+        const transmissionLine = document.getElementById('transmissionLine');
+        const flashOverlay = document.getElementById('flashOverlay');
+
+        // Update static level
+        function updateStatic() {
+            const opacity = Math.min(Math.max(state.staticLevel, 0), 1);
+            staticOverlay.style.opacity = opacity;
+
+            if (state.staticLevel > 0.7) {
+                commWindow.classList.add('glitch');
+            } else {
+                commWindow.classList.remove('glitch');
+            }
+        }
+
+        // Show visual hint
+        function showVisualHint(hintKey) {
+            visualHint.innerHTML = visualHints[hintKey] || '';
+            visualHint.classList.add('active');
+
+            setTimeout(() => {
+                visualHint.classList.remove('active');
+            }, 2000);
+        }
+
+        // Flash scary image
+        function showFlash(imageIndex = 0) {
+            flashOverlay.style.backgroundImage = `url(${flashImages[imageIndex % flashImages.length]})`;
+            flashOverlay.classList.add('active');
+
+            setTimeout(() => {
+                flashOverlay.classList.remove('active');
+            }, 300);
+        }
+
+        // Show hidden message
+        function showHiddenMessage(text) {
+            hiddenMessage.textContent = text;
+            hiddenMessage.classList.add('active');
+
+            setTimeout(() => {
+                hiddenMessage.classList.remove('active');
+            }, 1000);
+        }
+
+        // Start the experience
+        function startExperience() {
+            setTimeout(() => {
+                state.currentRound = 1;
+                displayMessage(messages.round1.base);
+                showVisualHint(messages.round1.hint);
+                showFlash(0);
+            }, 2000);
+        }
+
+        // Display message with glitch effect
+        function displayMessage(html) {
+            messageContent.innerHTML = '<p class="glitch-text">' + html + '</p>';
+        }
+
+        // Get round 2 message based on state
+        function getRound2Message() {
+            if (state.forwardToSelfUsed) {
+                return messages.round2.self_forward;
+            } else if (state.replyCount > state.ignoreCount && state.replyCount >= 2) {
+                return messages.round2.reply_dominant;
+            } else if (state.ignoreCount > state.replyCount && state.ignoreCount >= 2) {
+                return messages.round2.ignore_dominant;
+            } else if (state.forwardCount > 0) {
+                return messages.round2.forward_used;
+            } else {
+                return messages.round2.forward_used;
+            }
+        }
+
+        // Check if should show ending
+        function checkForEnding() {
+            if (state.totalActions >= 3 && state.currentRound === 2) {
+                setTimeout(() => {
+                    showEnding();
+                }, 3000);
+            }
+        }
+
+        // Determine and show ending
+        function showEnding() {
+            let endingType;
+
+            if (state.forwardToSelfUsed) {
+                endingType = 'timeloop';
+            } else if (state.replyCount > state.ignoreCount && state.replyCount >= 2) {
+                endingType = 'branch';
+            } else if (state.ignoreCount >= 2 || state.ignoreCount > state.replyCount) {
+                endingType = 'dissolution';
+            } else {
+                endingType = 'branch';
+            }
+
+            // Hide main interface
+            document.querySelector('.container').style.display = 'none';
+
+            // Show appropriate ending
+            if (endingType === 'timeloop') {
+                document.getElementById('endingTimeLoop').classList.add('active');
+            } else if (endingType === 'branch') {
+                document.getElementById('endingBranch').classList.add('active');
+            } else {
+                document.getElementById('endingDissolution').classList.add('active');
+            }
+
+            // Show summary after ending
+            setTimeout(() => {
+                showSummary(endingType);
+            }, 8000);
+        }
+
+        // Show summary screen
+        function showSummary(endingType) {
+            // Hide ending screens
+            document.querySelectorAll('.ending-screen').forEach(el => el.classList.remove('active'));
+
+            // Update stats
+            document.getElementById('statTotal').textContent = state.totalActions;
+            document.getElementById('statReply').textContent = state.replyCount;
+            document.getElementById('statIgnore').textContent = state.ignoreCount;
+            document.getElementById('statForward').textContent = state.forwardCount;
+            document.getElementById('statFriend').textContent = state.forwardToFriend;
+            document.getElementById('statArchive').textContent = state.forwardToArchive;
+            document.getElementById('statSelf').textContent = state.forwardToSelf;
+
+            // Set explanation
+            let explanation = '';
+            if (endingType === 'timeloop') {
+                explanation = 'Forwarding the signal to yourself closed the loop. You were always on both sides of the transmission. The corridor was a prison of your own making, an eternal cycle with no beginning or end.';
+            } else if (endingType === 'branch') {
+                explanation = 'Frequent replies stabilized the signal and created a new timeline. Through active communication, you gave the sender hope and clarity. A stable branch emerged from the chaos, leading to an exit.';
+            } else {
+                explanation = 'Repeatedly ignoring the messages let the noise consume the sender. Without your attention, the signal deteriorated beyond recovery. The sender dissolved into static, lost forever in the void between realities.';
+            }
+
+            document.getElementById('summaryExplanation').textContent = explanation;
+
+            // Show summary
+            document.getElementById('summaryScreen').classList.add('active');
+        }
+
+        // Reply button handler
+        replyBtn.addEventListener('click', () => {
+            replyContainer.classList.add('active');
+            replyInput.focus();
+
+            // Reduce static when input is focused
+            state.staticLevel = Math.max(state.staticLevel - 0.15, 0.1);
+            updateStatic();
+        });
+
+        // Submit reply handler
+        submitReply.addEventListener('click', () => {
+            const text = replyInput.value.trim();
+            if (text.length === 0) return;
+
+            state.replyCount++;
+            state.totalActions++;
+            state.consecutiveIgnores = 0;
+            state.replies.push(text);
+            state.lastReplyText = text.toLowerCase();
+
+            // Play sound
+            playReplySound();
+
+            // Reduce static
+            state.staticLevel = Math.max(state.staticLevel - 0.2, 0.2);
+            updateStatic();
+
+            // Check for keywords
+            if (state.lastReplyText.includes('run')) {
+                showFlash(1);
+                showHiddenMessage('RUN!');
+            } else if (state.lastReplyText.includes('stay')) {
+                state.staticLevel += 0.1;
+                updateStatic();
+                showHiddenMessage('Staying... but the lights...');
+            } else if (state.lastReplyText.includes('help')) {
+                state.staticLevel = Math.max(state.staticLevel - 0.1, 0.1);
+                updateStatic();
+            }
+
+            // Hide input
+            replyContainer.classList.remove('active');
+            replyInput.value = '';
+
+            // Progress to next round if needed
+            if (state.currentRound === 1) {
+                setTimeout(() => {
+                    state.currentRound = 2;
+                    displayMessage(getRound2Message());
+                    showVisualHint(messages.round2.hint);
+                    showFlash(1);
+                    checkForEnding();
+                }, 1500);
+            } else {
+                checkForEnding();
+            }
+        });
+
+        // Ignore button handler
+        ignoreBtn.addEventListener('click', () => {
+            state.ignoreCount++;
+            state.totalActions++;
+            state.consecutiveIgnores++;
+
+            // Play sound
+            playIgnoreSound();
+
+            // Increase static
+            state.staticLevel = Math.min(state.staticLevel + 0.25, 1);
+            updateStatic();
+
+            // Show hidden message after multiple ignores
+            if (state.consecutiveIgnores >= 2) {
+                showHiddenMessage('YOU CAN\'T LOOK AWAY FOREVER');
+            }
+
+            // Add glitch effect
+            commWindow.classList.add('glitch');
+            setTimeout(() => {
+                commWindow.classList.remove('glitch');
+            }, 500);
+
+            // Progress to next round if needed
+            if (state.currentRound === 1) {
+                setTimeout(() => {
+                    state.currentRound = 2;
+                    displayMessage(getRound2Message());
+                    showVisualHint(messages.round2.hint);
+                    checkForEnding();
+                }, 1500);
+            } else {
+                checkForEnding();
+            }
+        });
+
+        // Forward button handler
+        forwardBtn.addEventListener('click', () => {
+            forwardMenu.classList.add('active');
+        });
+
+        // Forward option handlers
+        document.querySelectorAll('.forward-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const target = e.target.dataset.target;
+
+                state.forwardCount++;
+                state.totalActions++;
+                state.consecutiveIgnores = 0;
+
+                if (target === 'friend') {
+                    state.forwardToFriend++;
+                } else if (target === 'archive') {
+                    state.forwardToArchive++;
+                } else if (target === 'self') {
+                    state.forwardToSelf++;
+                    state.forwardToSelfUsed = true;
+                }
+
+                // Play sound
+                playForwardSound();
+
+                // Close menu
+                forwardMenu.classList.remove('active');
+
+                // Show transmission animation
+                showTransmission(target);
+
+                // Progress to next round if needed
+                setTimeout(() => {
+                    if (state.currentRound === 1) {
+                        state.currentRound = 2;
+                        displayMessage(getRound2Message());
+                        showVisualHint(messages.round2.hint);
+                        showFlash(1);
+                        checkForEnding();
+                    } else {
+                        // Update message based on forward target
+                        if (target === 'self' && !state.forwardToSelfUsed) {
+                            displayMessage(messages.round2.self_forward);
+                        }
+                        checkForEnding();
+                    }
+                }, 1500);
+            });
+        });
+
+        // Show transmission animation
+        function showTransmission(target) {
+            const line = transmissionLine;
+            const windowRect = commWindow.getBoundingClientRect();
+
+            let targetX, targetY;
+
+            if (target === 'friend') {
+                targetX = window.innerWidth - 100;
+                targetY = 100;
+            } else if (target === 'archive') {
+                targetX = 100;
+                targetY = 100;
+            } else if (target === 'self') {
+                targetX = windowRect.left + windowRect.width / 2;
+                targetY = windowRect.top;
+            }
+
+            line.style.left = (windowRect.left + windowRect.width / 2) + 'px';
+            line.style.top = (windowRect.top + windowRect.height) + 'px';
+            line.classList.add('active');
+
+            setTimeout(() => {
+                line.classList.remove('active');
+            }, 1000);
+        }
+
+        // Start the experience
+        startExperience();
+    </script>
+</body>
+</html>
