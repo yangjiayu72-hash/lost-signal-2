@@ -185,40 +185,82 @@
             max-width: 800px;
         }
 
-        /* Communication window - Futuristic design */
+        /* Communication window - Advanced Futuristic design */
         .comm-window {
             background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, 0.03) 2px,
+                    rgba(0, 255, 255, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(138, 43, 226, 0.03) 2px,
+                    rgba(138, 43, 226, 0.03) 4px
+                ),
                 linear-gradient(135deg,
                     rgba(255, 20, 147, 0.15) 0%,
                     rgba(138, 43, 226, 0.1) 50%,
                     rgba(72, 61, 139, 0.15) 100%
                 ),
                 rgba(0, 0, 0, 0.4);
-            border: 2px solid transparent;
-            border-image: linear-gradient(135deg, #ff1493, #8a2be2, #00ffff, #ff1493) 1;
+            border: 3px solid transparent;
+            border-image: linear-gradient(135deg,
+                #ff1493 0%,
+                #8a2be2 25%,
+                #00ffff 50%,
+                #8a2be2 75%,
+                #ff1493 100%
+            ) 1;
             clip-path: polygon(
-                0 10px,
-                10px 0,
-                calc(100% - 10px) 0,
-                100% 10px,
-                100% calc(100% - 10px),
-                calc(100% - 10px) 100%,
-                10px 100%,
-                0 calc(100% - 10px)
+                0 15px,
+                15px 0,
+                calc(100% - 15px) 0,
+                100% 15px,
+                100% calc(100% - 15px),
+                calc(100% - 15px) 100%,
+                15px 100%,
+                0 calc(100% - 15px)
             );
-            padding: 40px;
+            padding: 50px;
             min-height: 450px;
             position: relative;
             overflow: hidden;
             box-shadow:
-                0 0 60px rgba(255, 20, 147, 0.5),
-                0 0 100px rgba(138, 43, 226, 0.3),
-                inset 0 0 80px rgba(0, 0, 0, 0.5);
+                0 0 80px rgba(255, 20, 147, 0.6),
+                0 0 120px rgba(138, 43, 226, 0.4),
+                0 0 160px rgba(0, 255, 255, 0.3),
+                inset 0 0 100px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(138, 43, 226, 0.2);
             transition: all 0.4s ease;
-            backdrop-filter: blur(8px) saturate(180%);
+            backdrop-filter: blur(8px) saturate(180%) brightness(1.1);
+            animation: borderPulse 4s ease-in-out infinite;
         }
 
-        /* Holographic border effect */
+        @keyframes borderPulse {
+            0%, 100% {
+                box-shadow:
+                    0 0 80px rgba(255, 20, 147, 0.6),
+                    0 0 120px rgba(138, 43, 226, 0.4),
+                    0 0 160px rgba(0, 255, 255, 0.3),
+                    inset 0 0 100px rgba(0, 0, 0, 0.5),
+                    inset 0 0 20px rgba(138, 43, 226, 0.2);
+            }
+            50% {
+                box-shadow:
+                    0 0 100px rgba(255, 20, 147, 0.8),
+                    0 0 140px rgba(138, 43, 226, 0.6),
+                    0 0 180px rgba(0, 255, 255, 0.5),
+                    inset 0 0 100px rgba(0, 0, 0, 0.5),
+                    inset 0 0 30px rgba(138, 43, 226, 0.4);
+            }
+        }
+
+        /* Holographic border effect with hexagonal pattern */
         .comm-window::before {
             content: '';
             position: absolute;
@@ -226,19 +268,40 @@
             left: 0;
             right: 0;
             bottom: 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background:
+                repeating-linear-gradient(
+                    60deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(0, 255, 255, 0.03) 10px,
+                    rgba(0, 255, 255, 0.03) 11px
+                ),
+                repeating-linear-gradient(
+                    120deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 20, 147, 0.03) 10px,
+                    rgba(255, 20, 147, 0.03) 11px
+                );
+            border: 1px solid rgba(0, 255, 255, 0.2);
             clip-path: polygon(
-                0 10px,
-                10px 0,
-                calc(100% - 10px) 0,
-                100% 10px,
-                100% calc(100% - 10px),
-                calc(100% - 10px) 100%,
-                10px 100%,
-                0 calc(100% - 10px)
+                0 15px,
+                15px 0,
+                calc(100% - 15px) 0,
+                100% 15px,
+                100% calc(100% - 15px),
+                calc(100% - 15px) 100%,
+                15px 100%,
+                0 calc(100% - 15px)
             );
             pointer-events: none;
             z-index: 2;
+            animation: hexPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes hexPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
         }
 
         /* Animated scanline with holographic effect */
@@ -253,57 +316,99 @@
                 linear-gradient(
                     to bottom,
                     transparent 0%,
-                    rgba(255, 20, 147, 0.1) 50%,
+                    rgba(0, 255, 255, 0.15) 48%,
+                    rgba(255, 20, 147, 0.15) 50%,
+                    rgba(0, 255, 255, 0.15) 52%,
                     transparent 100%
                 );
-            animation: holographicScan 3s linear infinite;
+            animation: holographicScan 4s linear infinite;
             pointer-events: none;
             z-index: 3;
         }
 
         @keyframes holographicScan {
             0% { transform: translateY(-100%); opacity: 0; }
-            50% { opacity: 0.3; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
             100% { transform: translateY(200%); opacity: 0; }
         }
 
-        /* Corner accents */
+        /* Corner accents - Advanced Tech Style */
         .comm-window .corner-accent {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ff1493;
+            width: 40px;
+            height: 40px;
             z-index: 4;
             pointer-events: none;
-            box-shadow: 0 0 10px rgba(255, 20, 147, 0.8);
         }
 
-        .comm-window .corner-accent.top-left {
+        .comm-window .corner-accent::before,
+        .comm-window .corner-accent::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(135deg, #ff1493, #00ffff);
+            animation: cornerPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(255, 20, 147, 0.8); }
+            50% { opacity: 1; box-shadow: 0 0 20px rgba(0, 255, 255, 1); }
+        }
+
+        .comm-window .corner-accent.top-left::before {
             top: 0;
             left: 0;
-            border-right: none;
-            border-bottom: none;
+            width: 3px;
+            height: 30px;
         }
 
-        .comm-window .corner-accent.top-right {
+        .comm-window .corner-accent.top-left::after {
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 3px;
+        }
+
+        .comm-window .corner-accent.top-right::before {
             top: 0;
             right: 0;
-            border-left: none;
-            border-bottom: none;
+            width: 3px;
+            height: 30px;
         }
 
-        .comm-window .corner-accent.bottom-left {
+        .comm-window .corner-accent.top-right::after {
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 3px;
+        }
+
+        .comm-window .corner-accent.bottom-left::before {
             bottom: 0;
             left: 0;
-            border-right: none;
-            border-top: none;
+            width: 3px;
+            height: 30px;
         }
 
-        .comm-window .corner-accent.bottom-right {
+        .comm-window .corner-accent.bottom-left::after {
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 3px;
+        }
+
+        .comm-window .corner-accent.bottom-right::before {
             bottom: 0;
             right: 0;
-            border-left: none;
-            border-top: none;
+            width: 3px;
+            height: 30px;
+        }
+
+        .comm-window .corner-accent.bottom-right::after {
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 3px;
         }
 
         .comm-window.glitch {
