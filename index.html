@@ -1629,12 +1629,9 @@
                 clearInterval(blackHoleCheckInterval);
             }
 
-            // Check every 15 seconds for random black hole event
+            // Trigger black hole event every 15 seconds
             blackHoleCheckInterval = setInterval(() => {
-                // 30% chance to trigger black hole
-                if (Math.random() < 0.3) {
-                    triggerBlackHoleEvent();
-                }
+                triggerBlackHoleEvent();
             }, 15000);
         }
 
