@@ -185,7 +185,7 @@
             max-width: 800px;
         }
 
-        /* Communication window - Advanced Futuristic design */
+        /* Communication window - Advanced Futuristic 3D design */
         .comm-window {
             background:
                 repeating-linear-gradient(
@@ -231,36 +231,52 @@
             position: relative;
             overflow: hidden;
             box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.8),
+                0 35px 100px rgba(0, 0, 0, 0.6),
                 0 0 80px rgba(255, 20, 147, 0.6),
                 0 0 120px rgba(138, 43, 226, 0.4),
                 0 0 160px rgba(0, 255, 255, 0.3),
                 inset 0 0 100px rgba(0, 0, 0, 0.5),
-                inset 0 0 20px rgba(138, 43, 226, 0.2);
+                inset 0 0 20px rgba(138, 43, 226, 0.2),
+                inset -5px -5px 15px rgba(0, 0, 0, 0.4),
+                inset 5px 5px 15px rgba(255, 255, 255, 0.05);
             transition: all 0.4s ease;
             backdrop-filter: blur(8px) saturate(180%) brightness(1.1);
-            animation: borderPulse 4s ease-in-out infinite;
+            animation: borderPulse3D 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transform: perspective(1200px) rotateX(2deg) rotateY(-1deg) translateZ(0);
         }
 
-        @keyframes borderPulse {
+        @keyframes borderPulse3D {
             0%, 100% {
                 box-shadow:
+                    0 20px 60px rgba(0, 0, 0, 0.8),
+                    0 35px 100px rgba(0, 0, 0, 0.6),
                     0 0 80px rgba(255, 20, 147, 0.6),
                     0 0 120px rgba(138, 43, 226, 0.4),
                     0 0 160px rgba(0, 255, 255, 0.3),
                     inset 0 0 100px rgba(0, 0, 0, 0.5),
-                    inset 0 0 20px rgba(138, 43, 226, 0.2);
+                    inset 0 0 20px rgba(138, 43, 226, 0.2),
+                    inset -5px -5px 15px rgba(0, 0, 0, 0.4),
+                    inset 5px 5px 15px rgba(255, 255, 255, 0.05);
+                transform: perspective(1200px) rotateX(2deg) rotateY(-1deg) translateZ(0);
             }
             50% {
                 box-shadow:
+                    0 25px 80px rgba(0, 0, 0, 0.9),
+                    0 40px 120px rgba(0, 0, 0, 0.7),
                     0 0 100px rgba(255, 20, 147, 0.8),
                     0 0 140px rgba(138, 43, 226, 0.6),
                     0 0 180px rgba(0, 255, 255, 0.5),
                     inset 0 0 100px rgba(0, 0, 0, 0.5),
-                    inset 0 0 30px rgba(138, 43, 226, 0.4);
+                    inset 0 0 30px rgba(138, 43, 226, 0.4),
+                    inset -8px -8px 20px rgba(0, 0, 0, 0.5),
+                    inset 8px 8px 20px rgba(255, 255, 255, 0.08);
+                transform: perspective(1200px) rotateX(1deg) rotateY(-0.5deg) translateZ(10px);
             }
         }
 
-        /* Holographic border effect with hexagonal pattern */
+        /* Holographic border effect with hexagonal pattern - 3D layer */
         .comm-window::before {
             content: '';
             position: absolute;
@@ -297,6 +313,8 @@
             pointer-events: none;
             z-index: 2;
             animation: hexPulse 3s ease-in-out infinite;
+            transform: translateZ(3px);
+            transform-style: preserve-3d;
         }
 
         @keyframes hexPulse {
@@ -304,7 +322,7 @@
             50% { opacity: 0.7; }
         }
 
-        /* Animated scanline with holographic effect */
+        /* Animated scanline with holographic 3D effect */
         .comm-window::after {
             content: '';
             position: absolute;
@@ -321,16 +339,17 @@
                     rgba(0, 255, 255, 0.15) 52%,
                     transparent 100%
                 );
-            animation: holographicScan 4s linear infinite;
+            animation: holographicScan3D 4s linear infinite;
             pointer-events: none;
             z-index: 3;
+            transform-style: preserve-3d;
         }
 
-        @keyframes holographicScan {
-            0% { transform: translateY(-100%); opacity: 0; }
+        @keyframes holographicScan3D {
+            0% { transform: translateY(-100%) translateZ(5px); opacity: 0; }
             10% { opacity: 0.5; }
             90% { opacity: 0.5; }
-            100% { transform: translateY(200%); opacity: 0; }
+            100% { transform: translateY(200%) translateZ(5px); opacity: 0; }
         }
 
         /* Corner accents - Advanced Tech Style */
